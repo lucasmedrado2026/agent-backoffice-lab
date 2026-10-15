@@ -104,3 +104,53 @@ Essas vão além do que o Lucas definiu. Precisam de "OK" explícito antes de va
 - Contraste texto/fundo ≥ 4.5:1 em ambos os temas (validar o par vermelho/verde que escolhi acima).
 - `role="status"` ou `aria-live="polite"` no banner de resultado para que screen readers anunciem mudanças.
 - `aria-busy="true"` em áreas durante carregamento.
+
+---
+
+## 6. Dashboard [validado por Lucas em 2026-10-15]
+
+Específico para telas tipo "painel" (`app/agentes/painel`, etc.).
+Herda tudo da seção 2 (Restrições-base) e adiciona:
+
+### Hierarquia
+- Elemento dominante da tela: **1 métrica única em destaque** (ex.: M5 = "Dias até no ar"), tipograficamente maior que tudo (`text-4xl` ou `text-5xl` — adiciona 1 tamanho ao limite de 4, ok para dashboard).
+- Nenhum outro número pode competir com ela. Métricas secundárias usam `text-2xl` ou menos.
+- Máximo **3 números em destaque** por seção (nunca 6 cards KPI idênticos).
+
+### Dados e formatação
+- Números em `pt-BR` (vírgula decimal, ponto como separador de milhar). Ex.: `1.234` e `99,8%`.
+- Datas no formato `dd/mm/aaaa` ou relativas ("há 3 dias").
+- Toda métrica declara em letra miúda a **decisão que apoia** (ex.: debaixo de "Taxa de sucesso" → "quais agentes precisam ajuste").
+- Toda métrica declara a **janela** ("últimos 7/14/30 dias") e a **data da última atualização**.
+- "Sem dados no período" como texto explícito — **nunca** `0,0%` ou `NaN`.
+- Baseline (ex.: "referência: 130 dias") sempre rotulado como "informado por X, a validar".
+
+### Gráficos
+- SVG inline + Tailwind (sem bibliotecas).
+- **Todo gráfico tem valores em texto** ao lado ou numa tabela equivalente (acessibilidade).
+- Proibido: gráfico 3D, pie chart decorativo, gradiente em barra, animação on-hover que esconde dado.
+- Permitido: barra horizontal, sparkline, linha simples, mini bar chart.
+
+### Tabela (quando houver)
+- Números: `text-right`, `font-mono` ou `tabular-nums`.
+- Texto: `text-left`.
+- Cabeçalho: `font-medium` + borda inferior sutil, nunca background pesado.
+- Linhas: `border-b border-zinc-100 dark:border-zinc-800` entre linhas, **nunca** zebra + borda juntos.
+- Padding vertical mínimo: `py-3` (12px) por linha.
+- Ordenação indicada por ícone + estado (`▲ ▼ ▬`) no cabeçalho.
+- Coluna "Atenção" (quando aplicável): sempre com **texto do motivo**, nunca só badge colorida.
+
+### Cores em dashboard
+- Além da paleta de estados da seção 3: **nenhuma cor nova**.
+- Erro mais frequente (DUPLICATE, UNAVAILABLE, etc.) usa a cor funcional já definida.
+- "Precisa de atenção" na tabela = ícone `⚠` + texto do motivo em `text-amber-800`, não row amarela inteira.
+
+### Linguagem
+- "Dias em implantação" em vez de "Tempo médio desde createdAt".
+- "Erros por tipo" em vez de "ErrorCode distribution".
+- Jargão (`p95`, `token`, `JSON`) **só** em tooltips ou em "Detalhes técnicos" recolhido.
+
+### Faixa fixa de simulação
+- `role="status"`, cor neutra (zinc), fixada no topo da área de conteúdo:
+  **"Dados simulados até 2026-10-15. Nenhum número aqui vem de produção."**
+- Nunca é removida sem decisão explícita.

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { confirmActionMock, runAgentMock, type Scenario } from "@/lib/mock-api";
+import { AgentApi, type Scenario } from "@/lib/api";
 import type { ErrorCode, RunResult, ToolResult } from "@/lib/contract";
 import { humanizeStep } from "@/lib/trace-humanizer";
 
@@ -38,14 +38,14 @@ export default function TestarAgentePage() {
     const startedAt = Date.now();
     setView({ kind: "loading", startedAt });
     setIdCopied(false);
-    const run = await runAgentMock(message, scenario);
+    const run = await AgentApi.runAgent(message, scenario);
     setView({ kind: "result", run });
   }
 
   async function handleConfirm(accept: boolean) {
     if (view.kind !== "result" || !view.run.pendingAction) return;
     setConfirmBusy(accept ? "accept" : "reject");
-    const run = await confirmActionMock(view.run.runId, accept);
+    const run = await AgentApi.confirmAction(view.run.runId, accept);
     setConfirmBusy(null);
     setView({ kind: "result", run });
   }
@@ -134,14 +134,14 @@ export default function TestarAgentePage() {
           onRetry={() => {
             // reenvia a mesma simulação com a mesma mensagem
             setView({ kind: "loading", startedAt: Date.now() });
-            runAgentMock(message, scenario).then((run) =>
+            AgentApi.runAgent(message, scenario).then((run) =>
               setView({ kind: "result", run }),
             );
           }}
           onReplyNeedsInput={(reply) => {
             setView({ kind: "loading", startedAt: Date.now() });
             // Numa integração real reusaríamos o runId; no mock, basta re-executar.
-            runAgentMock(reply, "sucesso").then((run) =>
+            AgentApi.runAgent(reply, "sucesso").then((run) =>
               setView({ kind: "result", run }),
             );
           }}

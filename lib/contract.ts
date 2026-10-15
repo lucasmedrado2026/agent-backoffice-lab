@@ -76,3 +76,67 @@ export type RunResult = {
   /** Tempo total em milissegundos — só exibido em "Detalhes técnicos". */
   latencyMs: number;
 };
+
+/* ─────────────────────────────────────────────
+ * Aditivo Dia 5 — tipos de domínio para o painel
+ * (não removem nem renomeiam nada do Dia 4)
+ * ──────────────────────────────────────────── */
+
+/** Hospital/cliente cadastrado. */
+export type ClienteRecord = {
+  id: string;
+  nome: string;
+  cnpj: string;
+  /** ISO 8601. */
+  createdAt: string;
+};
+
+/** Em que fase do ciclo de vida o agente está. */
+export type AgenteStatus = "em_implantacao" | "no_ar" | "pausado";
+
+/** Quem criou o agente: CS (o alvo que o produto quer habilitar) ou dev. */
+export type CreatedBy = "cs" | "dev";
+
+/** Agente de um cliente. */
+export type AgenteRecord = {
+  id: string;
+  clienteId: string;
+  nome: string;
+  status: AgenteStatus;
+  /** ISO 8601. */
+  createdAt: string;
+  /** ISO 8601, ou null se ainda não publicado. */
+  publishedAt: string | null;
+  createdBy: CreatedBy;
+};
+
+/** Registro de uma execução passada do agente — base das métricas. */
+export type ExecutionRecord = {
+  /** Mesmo valor que `RunResult.runId`. */
+  id: string;
+  agenteId: string;
+  clienteId: string;
+  /** ISO 8601 — quando a execução começou. */
+  startedAt: string;
+  latencyMs: number;
+  status: RunStatus;
+  errorCode?: ErrorCode;
+  toolsUsed: ("cadastrarCliente" | "listarClientes")[];
+  dataChanged: boolean;
+  /** Preenchido só quando houve pedido de confirmação. */
+  confirmation?: "accepted" | "rejected" | null;
+  usage: { inputTokens: number; outputTokens: number };
+};
+
+/** Configuração de um agente criado pelo CS no formulário "Novo". */
+export type AgentConfig = {
+  nome: string;
+  objetivo: string;
+  acoesPermitidas: {
+    cadastrarCliente: boolean;
+    listarClientes: boolean;
+  };
+  /** Padrão: true. Pede confirmação antes de qualquer ação que altera dados. */
+  pedirConfirmacaoAlteraDados: boolean;
+};
+
